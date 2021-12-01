@@ -11,9 +11,20 @@ import random
 import re
 
 
-api_id = 000000        # YOUR API_ID
-api_hash = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'        # YOUR API_HASH
-phone = '+34000000000'        # YOUR PHONE NUMBER, INCLUDING COUNTRY CODE
+# App configuration
+# App api_id:
+# 13526775
+# App api_hash:
+# e240136f5a706ebceb86314b182e5440
+# App title:
+# Ares Protocol
+# Short name:
+# Ares12
+# alphanumeric, 5-32 characters
+
+api_id = 00000000        # YOUR API_ID
+api_hash = 'XXXX136f5a706ebceb86314b182eXXXX'        # YOUR API_HASH
+phone = '+86XXXXXXXXXXX'        # YOUR PHONE NUMBER, INCLUDING COUNTRY CODE
 client = TelegramClient(phone, api_id, api_hash)
 
 client.connect()
@@ -142,7 +153,7 @@ def list_users_in_group():
     print('Saving In file...')
     with open("members-" + re.sub("-+","-",re.sub("[^a-zA-Z]","-",str.lower(target_group.title))) + ".csv","w",encoding='UTF-8') as f:
         writer = csv.writer(f,delimiter=",",lineterminator="\n")
-        writer.writerow(['username','user id', 'access hash','name','group', 'group id'])
+        writer.writerow(['username','user id', 'access hash','name','group', 'group id', 'status'])
         for user in all_participants:
             if user.username:
                 username= user.username
@@ -157,7 +168,7 @@ def list_users_in_group():
             else:
                 last_name= ""
             name= (first_name + ' ' + last_name).strip()
-            writer.writerow([username,user.id,user.access_hash,name,target_group.title, target_group.id])      
+            writer.writerow([username,user.id,user.access_hash,name,target_group.title, target_group.id, user.status])
     print('Members scraped successfully.')
 
 def printCSV():
