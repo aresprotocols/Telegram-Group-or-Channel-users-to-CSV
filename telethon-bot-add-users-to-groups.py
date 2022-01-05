@@ -144,6 +144,7 @@ def list_users_in_group():
     g_index = input("Enter a Number: ")
     target_group=groups[int(g_index)]
 
+
     print('\n\nGrupo elegido:\t' + groups[int(g_index)].title)
     
     print('Fetching Members...')
@@ -151,7 +152,9 @@ def list_users_in_group():
     all_participants = client.get_participants(target_group, aggressive=True)
     
     print('Saving In file...')
-    with open("members-" + re.sub("-+","-",re.sub("[^a-zA-Z]","-",str.lower(target_group.title))) + ".csv","w",encoding='UTF-8') as f:
+    # with open("members-" + re.sub("-+","-",re.sub("[^a-zA-Z]","-",str.lower(target_group.title))) + ".csv","w",encoding='UTF-8') as f:
+    with open( "members-{}-{}.csv".format(g_index, target_group.title), "w",
+              encoding='UTF-8') as f:
         writer = csv.writer(f,delimiter=",",lineterminator="\n")
         writer.writerow(['username','user id', 'access hash','name','group', 'group id', 'status'])
         for user in all_participants:
