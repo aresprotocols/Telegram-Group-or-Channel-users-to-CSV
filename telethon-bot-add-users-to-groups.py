@@ -1,8 +1,10 @@
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetDialogsRequest
-from telethon.tl.types import InputPeerEmpty, InputPeerChannel, InputPeerUser
+from telethon.tl.types import InputPeerEmpty, InputPeerChannel, InputPeerUser, ChatForbidden
 from telethon.errors.rpcerrorlist import PeerFloodError, UserPrivacyRestrictedError
 from telethon.tl.functions.channels import InviteToChannelRequest
+from telethon.tl.functions.messages import ReadHistoryRequest
+
 import sys
 import csv
 import traceback
@@ -138,18 +140,28 @@ def list_users_in_group():
     print('Choose a group to scrape members from:')
     i=0
     for g in groups:
-        print(str(i) + '- ' + g.title)
+        info = "[!!无权访问!!]" if isinstance(g, ChatForbidden) else ""
+        print(str(i) + '- ' + g.title, info)
         i+=1
     
     g_index = input("Enter a Number: ")
     target_group=groups[int(g_index)]
 
-
     print('\n\nGrupo elegido:\t' + groups[int(g_index)].title)
-    
-    print('Fetching Members...')
+    print(target_group)
+    print('Fetching Members... ')
+
+    if isinstance(target_group, ChatForbidden):
+        print("无权限访问")
+        return
+
+    # for user in client.iter_participants(target_group):
+    #     print("测试：",user.id, user.username)
+    #
+    # print("测试结束 ………………………………………………………………")
+
     all_participants = []
-    all_participants = client.get_participants(target_group, aggressive=True)
+    all_participants = client.get_participants(target_group)# aggressive=True
     
     print('Saving In file...')
     # with open("members-" + re.sub("-+","-",re.sub("[^a-zA-Z]","-",str.lower(target_group.title))) + ".csv","w",encoding='UTF-8') as f:

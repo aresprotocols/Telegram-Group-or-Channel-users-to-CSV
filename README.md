@@ -35,3 +35,28 @@ Adding users by User ID expects a CSV file such as: `username,user_id,user_acces
 > No headers are expected in the CSV files
 
 Once you have your CSV prepared, just follow the instructions in the script.
+
+## Evn
+* virtualenv -p /usr/local/bin/python3.9 venv
+* . venv/bin/activate (for 3.9.6)
+* pip install -r requirements.txt
+
+## Change api :
+/usr/local/lib/python3.9/dist-packages/telethon/client
+```
+results = await self.client(self.requests)
+        print("Request .. ",self.requests)
+        print("RANGE.. ", range(len(self.requests)))
+        for i in reversed(range(len(self.requests))):
+            print("DEBUGN..FULL ", i, results, type(results))
+            # print("DEBUGN..LESS ", i, results[i])
+            participants = results
+            if isinstance(results, list) :
+                participants = results[i]
+            if self.total is None:
+                # Will only get here if there was one request with a filter that matched all users.
+                self.total = participants.count
+            if not participants.users:
+                self.requests.pop(i)
+                continue
+```
