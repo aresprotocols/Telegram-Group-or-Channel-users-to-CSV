@@ -1,6 +1,6 @@
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetDialogsRequest
-from telethon.tl.types import InputPeerEmpty, InputPeerChannel, InputPeerUser, ChatForbidden
+from telethon.tl.types import InputPeerEmpty, InputPeerChannel, InputPeerUser, ChatForbidden, UserStatusOffline
 from telethon.errors.rpcerrorlist import PeerFloodError, UserPrivacyRestrictedError
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import ReadHistoryRequest
@@ -9,6 +9,7 @@ import sys
 import csv
 import traceback
 import time
+import datetime
 import random
 import re
 
@@ -24,9 +25,9 @@ import re
 # Ares12
 # alphanumeric, 5-32 characters
 
-api_id = 00000000        # YOUR API_ID
-api_hash = 'XXXX136f5a706ebceb86314b182eXXXX'        # YOUR API_HASH
-phone = '+86XXXXXXXXXXX'        # YOUR PHONE NUMBER, INCLUDING COUNTRY CODE
+api_id = 14775967        # YOUR API_ID
+api_hash = '706ab27678d9ed45ca137ef253deddcb'        # YOUR API_HASH
+phone = '+8618210008157'        # YOUR PHONE NUMBER, INCLUDING COUNTRY CODE
 client = TelegramClient(phone, api_id, api_hash)
 
 client.connect()
@@ -155,35 +156,44 @@ def list_users_in_group():
         print("无权限访问")
         return
 
+    # user_count = 0
     # for user in client.iter_participants(target_group):
-    #     print("测试：",user.id, user.username)
+    #     user_count+=1
+    #     # print("测试：",user_count, user.id, user.username)
     #
     # print("测试结束 ………………………………………………………………")
+    # return
 
     all_participants = []
     all_participants = client.get_participants(target_group)# aggressive=True
-    
-    print('Saving In file...')
+
+    print('Saving In file... count : ', len(all_participants))
     # with open("members-" + re.sub("-+","-",re.sub("[^a-zA-Z]","-",str.lower(target_group.title))) + ".csv","w",encoding='UTF-8') as f:
     with open( "members-{}-{}.csv".format(g_index, target_group.title), "w",
               encoding='UTF-8') as f:
         writer = csv.writer(f,delimiter=",",lineterminator="\n")
-        writer.writerow(['username','user id', 'access hash','name','group', 'group id', 'status'])
+        writer.writerow(['username', 'name', 'group', 'status'])
         for user in all_participants:
             if user.username:
-                username= user.username
+                username = user.username
             else:
-                username= ""
+                username = ""
             if user.first_name:
-                first_name= user.first_name
+                first_name = user.first_name
             else:
-                first_name= ""
+                first_name = ""
             if user.last_name:
-                last_name= user.last_name
+                last_name = user.last_name
             else:
-                last_name= ""
-            name= (first_name + ' ' + last_name).strip()
-            writer.writerow([username,user.id,user.access_hash,name,target_group.title, target_group.id, user.status])
+                last_name = ""
+            if isinstance(user.status, UserStatusOffline):
+                str_time_status = str(user.status.was_online)
+                str_time = str_time_status.replace('+00:00', '')
+                user_status = datetime.datetime.strptime(str_time, '%Y-%m-%d %H:%M:%S')
+            else:
+                user_status = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            name = (first_name + ' ' + last_name).strip()
+            writer.writerow([username, name, target_group.title, user_status])
     print('Members scraped successfully.')
 
 def printCSV():
